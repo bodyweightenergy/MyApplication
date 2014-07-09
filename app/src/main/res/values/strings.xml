@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">My Application</string>
+    <string name="hello_world">Hello world! id="hello_world"</string>
+    <string name="action_settings">Settings</string>
+    <string name="toggleButton1">Toggle Relay #1</string>
+    <string name="toggleButton2">Toggle Relay #2</string>
+    <string name="toggleButton3">Toggle Relay #3</string>
+    <string name="toggleButton4">Toggle Relay #4</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+    <string name="settings_menu_save">Save</string>
+    <string name="ip_input_field_hint">IP Address</string>
+    <string name="toggle_indicator_1">ON</string>
+    <string name="toggle_indicator_2">OFF</string>
+    <string name="access_filename">access_file</string>
+    <string name="ip_filename">ip_file</string>
+    <string name="port_filename">port_file</string>
+    <string name="relay_status_filename">relay_status_file_</string>
+
+    <string name="default_code">0000</string>
+    <string name="default_ip">192.168.1.100</string>
+    <string name="default_port">22</string>
+    <string name="default_status">false</string>
+    <string name="invalidAccessToast">Invalid Access Code.\n Please Enter again (0-9999)</string>
+    <string name="invalidIPToast">Invalid IP Address.\n Please Enter again (e.g. 192.168.1.100)</string>
+    <string name="invalidPortToast">Invalid Port Number.\n Please Enter again (0-255)</string>
+
+</resources>
