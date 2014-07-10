@@ -122,19 +122,13 @@ public class MainActivity extends Activity {
     }
 
     public void updateToggleIndicators(Context context){
-        outputText("*6*");
         boolean done = false;
         boolean t1 = false; //place holders for preference values
         boolean t2 = false;
         boolean t3 = false;
         boolean t4 = false;
         if(connected) {
-            outputText("*7*");
-                //networktask.SendDataToNetwork("!"); //send request
-            outputText("*8*");
-                outputText(inComingString);
-            outputText("*9*");
-
+                outputText("updating indicators with string="+inComingString);
                 for (int i = 0; i < inComingString.length(); i++) {
                     if (inComingString.charAt(i) == '<') {
                         if (inComingString.charAt(i + 5) == '>') {
@@ -142,7 +136,6 @@ public class MainActivity extends Activity {
                             t2 = (inComingString.charAt(i + 2) != '0');
                             t3 = (inComingString.charAt(i + 3) != '0');
                             t4 = (inComingString.charAt(i + 4) != '0');
-                            outputText("*10*");
                             done = true;
                         }
 
@@ -151,23 +144,19 @@ public class MainActivity extends Activity {
         }
 
         if(done){
-            outputText("*11*");
             Prefs.setRelayStatus1(getApplicationContext(), t1);
             Prefs.setRelayStatus2(getApplicationContext(), t2);
             Prefs.setRelayStatus3(getApplicationContext(), t3);
             Prefs.setRelayStatus4(getApplicationContext(), t4);
         }
-        outputText("*12*");
         slider1.setChecked(Prefs.getRelayStatus1(context));
         slider2.setChecked(Prefs.getRelayStatus2(context));
         slider3.setChecked(Prefs.getRelayStatus3(context));
         slider4.setChecked(Prefs.getRelayStatus4(context));
-        outputText("*13*");
         slider1.setBackgroundColor((Prefs.getRelayStatus1(context) ? 0xFF00FF00 : 0xFF777777));
         slider2.setBackgroundColor((Prefs.getRelayStatus2(context) ? 0xFF00FF00 : 0xFF777777));
         slider3.setBackgroundColor((Prefs.getRelayStatus3(context) ? 0xFF00FF00 : 0xFF777777));
         slider4.setBackgroundColor((Prefs.getRelayStatus4(context) ? 0xFF00FF00 : 0xFF777777));
-        outputText("*14*");
     }
     // ----------------------- CONNECT BUTTON EVENTLISTENER - begin ----------------------------
     private View.OnClickListener buttonConnectOnClickListener = new View.OnClickListener() {
@@ -187,36 +176,26 @@ public class MainActivity extends Activity {
     };
     private View.OnClickListener buttonToggle1OnClickListener = new View.OnClickListener() {
         public void onClick(View v){
-            outputText("#1" + inComingString);
             networktask.SendDataToNetwork("1");
-            networktask.SendDataToNetwork("!");
-            outputText("#2" + inComingString);
-            updateToggleIndicators(getApplicationContext());
-            outputText("#3" + inComingString);
+            outputText("Toggle 1.");
         }
     };
     private View.OnClickListener buttonToggle2OnClickListener = new View.OnClickListener() {
         public void onClick(View v){
-            outputText("*1*");
             networktask.SendDataToNetwork("2");
-            networktask.SendDataToNetwork("!");
-            outputText("*5*");
-            updateToggleIndicators(getApplicationContext());
-            outputText("*15*");
+            outputText("Toggle 2.");
         }
     };
     private View.OnClickListener buttonToggle3OnClickListener = new View.OnClickListener() {
         public void onClick(View v){
             networktask.SendDataToNetwork("3");
-            networktask.SendDataToNetwork("!");
-            updateToggleIndicators(getApplicationContext());
+            outputText("Toggle 3.");
         }
     };
     private View.OnClickListener buttonToggle4OnClickListener = new View.OnClickListener() {
         public void onClick(View v){
             networktask.SendDataToNetwork("4");
-            networktask.SendDataToNetwork("!");
-            updateToggleIndicators(getApplicationContext());
+            outputText("Toggle 4.");
         }
     };
     // ----------------------- CONNECT BUTTON EVENTLISTENER - end ----------------------------
@@ -286,11 +265,8 @@ public class MainActivity extends Activity {
         //Method tries to send Strings over the socket connection
         public void SendDataToNetwork(String cmd) { //You run this from the main thread.
             try {
-                outputText("*2*");
                 if (nsocket.isConnected()) {
-                    outputText("*3*");
                     nos.write(cmd.getBytes());
-                    outputText("*4*");
                 } else {
                     outputText("SendDataToNetwork: Cannot send message. Socket is closed");
                 }
@@ -299,16 +275,12 @@ public class MainActivity extends Activity {
             }
         }
 
-        //Methods is called everytime a new String is recieved from the socket connection
+        //Methods is called every time a new String is recieved from the socket connection
         @Override
         protected void onProgressUpdate(String... values) {
-            outputText("*16*");
-           String in = values[0];
-            inComingString = in;   //get last string
-            outputText("onProgressUpdate: " +inComingString);
-            outputText("*17*");
+           String in = values[0];  //get last string
+            inComingString = in;
             updateToggleIndicators(getApplicationContext());
-            outputText("onProg updateInd");
         }
 
         //Method is called when task is cancelled
@@ -347,7 +319,22 @@ public class MainActivity extends Activity {
 
     //Method appends text to the textfield and adds a newline character
     public void outputText(String msg) {
-        textlog.append(msg+"\n");
+        int scrollAmount;
+        // append the new string
+        textlog.append(msg + "\n");
+        // find the amount we need to scroll.  This works by
+        // asking the TextView's internal layout for the position
+        // of the final line and then subtracting the TextView's height
+        try {
+            scrollAmount = textlog.getLayout().getLineTop(textlog.getLineCount()) - textlog.getHeight();
+        } catch (NullPointerException e){
+            scrollAmount = 0;
+        }
+        // if there is no need to scroll, scrollAmount will be <=0
+        if (scrollAmount > 0)
+            textlog.scrollTo(0, scrollAmount);
+        else
+            textlog.scrollTo(0, 0);
     }
 
     //Method is called when app is closed
