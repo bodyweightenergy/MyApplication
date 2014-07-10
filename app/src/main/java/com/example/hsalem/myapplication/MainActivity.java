@@ -347,3 +347,7 @@ public class MainActivity extends Activity {
         }
     }
 }
+
+//TODO: Make server connection validity more intelligent
+//TODO: Add indicator for server connection validity
+//TODO: Replace slider indicators with TextView indications
