@@ -79,13 +79,12 @@ public class MainActivity extends Activity {
         textlog.setText("Starting Client");//log that the App launched
         changeConnectionStatus(false);//change connectionstatus to "disconnected"
 
-        //add Eventlisteners
+        //add EventListeners
         buttonConnect.setOnClickListener(buttonConnectOnClickListener);
         buttonToggle1.setOnClickListener(buttonToggle1OnClickListener);
         buttonToggle2.setOnClickListener(buttonToggle2OnClickListener);
         buttonToggle3.setOnClickListener(buttonToggle3OnClickListener);
         buttonToggle4.setOnClickListener(buttonToggle4OnClickListener);
-        //seekBar.setOnSeekBarChangeListener(seekbarchangedListener);
 
         networktask = new NetworkTask();//Create initial instance so SendDataToNetwork doesn't throw an error.
     }

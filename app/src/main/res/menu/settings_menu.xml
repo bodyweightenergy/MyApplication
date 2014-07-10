@@ -5,4 +5,8 @@
         android:title="@string/settings_menu_save"
         android:orderInCategory="100"
         android:showAsAction="never" />
+    <item android:id="@+id/action_discard"
+        android:title="@string/settings_menu_discard"
+        android:orderInCategory="100"
+        android:showAsAction="never" />
 </menu>

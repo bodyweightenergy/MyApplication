@@ -1,7 +1,6 @@
 package com.example.hsalem.myapplication;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -12,11 +11,6 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
-
-import com.example.hsalem.myapplication.IPAddressValidator;
-
-import java.net.InetAddress;
-import java.net.Socket;
 
 public class SettingsActivity extends Activity {
 
@@ -100,10 +94,20 @@ public class SettingsActivity extends Activity {
             case R.id.action_save:
                 saveSettings();
                 return true;
+            case R.id.action_discard:
+                discardSettings();
+                return true;
 
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+    public void discardSettings(){
+        Toast invalidPortToast = Toast.makeText(getApplicationContext(), getString(R.string.discardSettingsToast), Toast.LENGTH_SHORT);
+        invalidPortToast.show();
+        //switch to MainActivity
+        Intent saveSettings_intent = new Intent(this, MainActivity.class);
+        startActivity(saveSettings_intent);
     }
     public void saveSettings(){
         boolean isValidAccess = isValidAccess(temp_AccessCode);
