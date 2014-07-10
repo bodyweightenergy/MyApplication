@@ -206,8 +206,8 @@ public class MainActivity extends Activity {
         InputStream nis; //Network Input Stream
         OutputStream nos; //Network Output Stream
         BufferedReader inFromServer;//Buffered reader to store the incoming bytes
+        final String prefAddress = Prefs.getIPAddress(getApplicationContext());
 
-        @Override
         protected void onPreExecute() {
             //change the connection status to "connected" when the task is started
             changeConnectionStatus(true);
@@ -218,7 +218,7 @@ public class MainActivity extends Activity {
             boolean result = false;
             try {
                 //create a new socket instance
-                SocketAddress sockaddr = new InetSocketAddress("10.1.11.157", 23);
+                SocketAddress sockaddr = new InetSocketAddress(prefAddress, 23);
                 nsocket = new Socket();
                 nsocket.connect(sockaddr, 5000);//connect and set a 10 second connection timeout
                 if (nsocket.isConnected()) {//when connected
