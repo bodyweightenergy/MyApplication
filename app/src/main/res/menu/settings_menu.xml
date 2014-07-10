@@ -1,12 +1,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.hsalem.myapplication.SettingsActivity" >
-    <item android:id="@+id/action_save"
-        android:title="@string/settings_menu_save"
-        android:orderInCategory="100"
-        android:showAsAction="never" />
     <item android:id="@+id/action_discard"
         android:title="@string/settings_menu_discard"
         android:orderInCategory="100"
         android:showAsAction="never" />
+    <item android:id="@+id/action_save"
+        android:title="@string/settings_menu_save"
+        android:orderInCategory="100"
+        android:showAsAction="never" />
+
 </menu>

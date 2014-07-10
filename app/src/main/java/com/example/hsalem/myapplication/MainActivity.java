@@ -117,6 +117,7 @@ public class MainActivity extends Activity {
             networktask.cancel(true);//cancel the task
         }
         Intent openSettings_intent = new Intent(this, SettingsActivity.class);
+
         startActivity(openSettings_intent);
     }
 
@@ -341,6 +342,7 @@ public class MainActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         if(networktask!=null){//In case the task is currently running
+            networktask.closeSocket();
             networktask.cancel(true);//cancel the task
         }
     }

@@ -107,6 +107,7 @@ public class SettingsActivity extends Activity {
         invalidPortToast.show();
         //switch to MainActivity
         Intent saveSettings_intent = new Intent(this, MainActivity.class);
+        saveSettings_intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(saveSettings_intent);
     }
     public void saveSettings(){
@@ -121,6 +122,7 @@ public class SettingsActivity extends Activity {
 
             //switch to MainActivity
             Intent saveSettings_intent = new Intent(this, MainActivity.class);
+            saveSettings_intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(saveSettings_intent);
         }
         else {
