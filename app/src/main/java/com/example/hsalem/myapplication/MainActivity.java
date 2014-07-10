@@ -40,7 +40,7 @@ public class MainActivity extends Activity {
     Button buttonToggle2;
     Button buttonToggle3;
     Button buttonToggle4;
-    public byte[] inComingByteArray = {'$'};
+    public String[] inComingStringArray = {""};
     public String inComingString = "$";
 
     boolean connected=false;//stores the connectionstatus
@@ -122,45 +122,52 @@ public class MainActivity extends Activity {
     }
 
     public void updateToggleIndicators(Context context){
+        outputText("*6*");
         boolean done = false;
         boolean t1 = false; //place holders for preference values
         boolean t2 = false;
         boolean t3 = false;
         boolean t4 = false;
         if(connected) {
-            networktask.SendDataToNetwork("!"); //send request
-            outputText(inComingString);
+            outputText("*7*");
+                //networktask.SendDataToNetwork("!"); //send request
+            outputText("*8*");
+                outputText(inComingString);
+            outputText("*9*");
 
-            //char[] inComingCharArray = inComingString.toCharArray();
+                for (int i = 0; i < inComingString.length(); i++) {
+                    if (inComingString.charAt(i) == '<') {
+                        if (inComingString.charAt(i + 5) == '>') {
+                            t1 = (inComingString.charAt(i + 1) != '0');
+                            t2 = (inComingString.charAt(i + 2) != '0');
+                            t3 = (inComingString.charAt(i + 3) != '0');
+                            t4 = (inComingString.charAt(i + 4) != '0');
+                            outputText("*10*");
+                            done = true;
+                        }
 
-            for (int i = 0; i < inComingString.length(); i++) {
-                if (inComingString.charAt(i) == '<') {
-                    if (inComingString.charAt(i + 5) == '>') {
-                        t1 = (inComingString.charAt(i + 1) != '0');
-                        t2 = (inComingString.charAt(i + 2) != '0');
-                        t3 = (inComingString.charAt(i + 3) != '0');
-                        t4 = (inComingString.charAt(i + 4) != '0');
-                        done = true;
                     }
-
                 }
-            }
         }
 
         if(done){
+            outputText("*11*");
             Prefs.setRelayStatus1(getApplicationContext(), t1);
             Prefs.setRelayStatus2(getApplicationContext(), t2);
             Prefs.setRelayStatus3(getApplicationContext(), t3);
             Prefs.setRelayStatus4(getApplicationContext(), t4);
         }
+        outputText("*12*");
         slider1.setChecked(Prefs.getRelayStatus1(context));
         slider2.setChecked(Prefs.getRelayStatus2(context));
         slider3.setChecked(Prefs.getRelayStatus3(context));
         slider4.setChecked(Prefs.getRelayStatus4(context));
+        outputText("*13*");
         slider1.setBackgroundColor((Prefs.getRelayStatus1(context) ? 0xFF00FF00 : 0xFF777777));
         slider2.setBackgroundColor((Prefs.getRelayStatus2(context) ? 0xFF00FF00 : 0xFF777777));
         slider3.setBackgroundColor((Prefs.getRelayStatus3(context) ? 0xFF00FF00 : 0xFF777777));
         slider4.setBackgroundColor((Prefs.getRelayStatus4(context) ? 0xFF00FF00 : 0xFF777777));
+        outputText("*14*");
     }
     // ----------------------- CONNECT BUTTON EVENTLISTENER - begin ----------------------------
     private View.OnClickListener buttonConnectOnClickListener = new View.OnClickListener() {
@@ -180,24 +187,34 @@ public class MainActivity extends Activity {
     };
     private View.OnClickListener buttonToggle1OnClickListener = new View.OnClickListener() {
         public void onClick(View v){
+            outputText("#1" + inComingString);
             networktask.SendDataToNetwork("1");
+            networktask.SendDataToNetwork("!");
+            outputText("#2" + inComingString);
             updateToggleIndicators(getApplicationContext());
+            outputText("#3" + inComingString);
         }
     };
     private View.OnClickListener buttonToggle2OnClickListener = new View.OnClickListener() {
         public void onClick(View v){
+            outputText("*1*");
             networktask.SendDataToNetwork("2");
+            networktask.SendDataToNetwork("!");
+            outputText("*5*");
             updateToggleIndicators(getApplicationContext());
+            outputText("*15*");
         }
     };
     private View.OnClickListener buttonToggle3OnClickListener = new View.OnClickListener() {
         public void onClick(View v){
             networktask.SendDataToNetwork("3");
+            networktask.SendDataToNetwork("!");
             updateToggleIndicators(getApplicationContext());
         }
     };
     private View.OnClickListener buttonToggle4OnClickListener = new View.OnClickListener() {
         public void onClick(View v){
+            networktask.SendDataToNetwork("4");
             networktask.SendDataToNetwork("!");
             updateToggleIndicators(getApplicationContext());
         }
@@ -205,7 +222,7 @@ public class MainActivity extends Activity {
     // ----------------------- CONNECT BUTTON EVENTLISTENER - end ----------------------------
 
     // ----------------------- THE NETWORK TASK - begin ----------------------------
-    public class NetworkTask extends AsyncTask<Void, byte[], Boolean> {
+    public class NetworkTask extends AsyncTask<Void, String, Boolean> {
         Socket nsocket; //Network Socket
         InputStream nis; //Network Input Stream
         OutputStream nos; //Network Output Stream
@@ -229,12 +246,13 @@ public class MainActivity extends Activity {
                     nis = nsocket.getInputStream();//get input
                     nos = nsocket.getOutputStream();//and output stream from the socket
                     inFromServer = new BufferedReader(new InputStreamReader(nis));//"attach the inputstreamreader"
+//                    String msgFromServer = inFromServer.readLine();//read the lines coming from the socket
+//                    byte[] theByteArray = msgFromServer.getBytes();//store the bytes in an array
+//                    publishProgress(msgFromServer);//update the publishProgress
                     while(true){//while connected
                         String msgFromServer = inFromServer.readLine();//read the lines coming from the socket
-                        byte[] theByteArray = msgFromServer.getBytes();//store the bytes in an array
-                        inComingByteArray = theByteArray;
-                        inComingString = msgFromServer;
-                        publishProgress(theByteArray);//update the publishProgress
+//                        byte[] theByteArray = msgFromServer.getBytes();//store the bytes in an array
+                        publishProgress(msgFromServer);//update the publishProgress
                     }
                 }
                 //catch exceptions
@@ -245,9 +263,9 @@ public class MainActivity extends Activity {
             catch (Exception e) {
                 e.printStackTrace();
                 result = true;
-                //}
-                //finally {
-                //closeSocket();
+                }
+                finally {
+                closeSocket();
             }
             return result;
         }
@@ -268,8 +286,11 @@ public class MainActivity extends Activity {
         //Method tries to send Strings over the socket connection
         public void SendDataToNetwork(String cmd) { //You run this from the main thread.
             try {
+                outputText("*2*");
                 if (nsocket.isConnected()) {
+                    outputText("*3*");
                     nos.write(cmd.getBytes());
+                    outputText("*4*");
                 } else {
                     outputText("SendDataToNetwork: Cannot send message. Socket is closed");
                 }
@@ -280,11 +301,14 @@ public class MainActivity extends Activity {
 
         //Methods is called everytime a new String is recieved from the socket connection
         @Override
-        protected void onProgressUpdate(byte[]... values) {
-            if (values.length > 0) {//if the recieved data is at least one byte
-                String command=new String(values[0]);//get the String from the recieved bytes
-                outputText("command is: <" + command + ">\n");
-            }
+        protected void onProgressUpdate(String... values) {
+            outputText("*16*");
+           String in = values[0];
+            inComingString = in;   //get last string
+            outputText("onProgressUpdate: " +inComingString);
+            outputText("*17*");
+            updateToggleIndicators(getApplicationContext());
+            outputText("onProg updateInd");
         }
 
         //Method is called when task is cancelled
@@ -293,15 +317,16 @@ public class MainActivity extends Activity {
             changeConnectionStatus(false);//change the connection to "disconnected"
         }
 
-        //Method is called after taskexecution
+        //Method is called after task execution
         @Override
         protected void onPostExecute(Boolean result) {
+
             if (result) {
                 outputText("onPostExecute: Completed with an Error.");
             } else {
                 outputText("onPostExecute: Completed.");
             }
-            changeConnectionStatus(false);//change connectionstaus to disconnected
+            changeConnectionStatus(false);//change connection status to disconnected
         }
     }
 
@@ -333,5 +358,4 @@ public class MainActivity extends Activity {
             networktask.cancel(true);//cancel the task
         }
     }
-
 }
