@@ -113,6 +113,10 @@ public class MainActivity extends Activity {
         }
     }
     public void openSettings(){
+        if(networktask!=null){//In case the task is currently running
+            networktask.closeSocket();
+            networktask.cancel(true);//cancel the task
+        }
         Intent openSettings_intent = new Intent(this, SettingsActivity.class);
         startActivity(openSettings_intent);
     }

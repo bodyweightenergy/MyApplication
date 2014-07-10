@@ -22,12 +22,14 @@ public class SettingsActivity extends Activity {
 
     //declare Views and variables
     public static final String PREF_FILE = "MyPrefFile";
-    private boolean isValidAccess = false;
-    private boolean isValidIP = false;
-    private boolean isValidPort = false;
     private EditText Access_textBox = null;
     private EditText IP_textBox = null;
     private EditText port_textBox = null;
+
+    //temporary holders for pref values
+    private int temp_AccessCode;
+    private String temp_IP;
+    private int temp_Port;
 
 
     @Override
@@ -38,6 +40,9 @@ public class SettingsActivity extends Activity {
         //update prefs
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
+        temp_AccessCode = Prefs.getAccessCode(getApplicationContext());
+        temp_IP = Prefs.getIPAddress(getApplicationContext());
+        temp_Port = Prefs.getPortNumber(getApplicationContext());
 
         String MACAddress = Utils.getMACAddress("wlan0");
         String ipAddress = Utils.getIPAddress(true); // IPv4
@@ -47,22 +52,16 @@ public class SettingsActivity extends Activity {
 
         //Match Views with IDs and update
         Access_textBox = (EditText) findViewById(R.id.editTextAccess);
-        Access_textBox.setText(String.valueOf(Prefs.getAccessCode(getApplicationContext())));
+        Access_textBox.setText(String.valueOf(temp_AccessCode));
         IP_textBox = (EditText) findViewById(R.id.editTextIP);
-        IP_textBox.setText(String.valueOf(Prefs.getIPAddress(getApplicationContext())));
+        IP_textBox.setText(String.valueOf(temp_IP));
         port_textBox = (EditText) findViewById(R.id.editTextPort);
-        port_textBox.setText(String.valueOf(Prefs.getPortNumber(getApplicationContext())));
+        port_textBox.setText(String.valueOf(temp_Port));
 
         //create TextWatcher for Access code editText
         Access_textBox.addTextChangedListener(new TextWatcher(){
             public void afterTextChanged(Editable s){
-                int code = Integer.valueOf(Access_textBox.getText().toString());
-                isValidAccess = ((code>=0 && code<=9999) ? true : false);
-                if(!isValidAccess) {
-                    //Access_textBox.setText("");
-                    Toast invalidAccessToast = Toast.makeText(getApplicationContext(), getString(R.string.invalidAccessToast), Toast.LENGTH_SHORT);
-                    invalidAccessToast.show();
-                }
+                temp_AccessCode = convertString2Int(Access_textBox.getText().toString());
             }
             public void beforeTextChanged(CharSequence s, int start, int count, int after){}
             public void onTextChanged(CharSequence s, int start, int before, int count) {}
@@ -70,13 +69,15 @@ public class SettingsActivity extends Activity {
         //create TextWatcher for IP editText
         IP_textBox.addTextChangedListener(new TextWatcher(){
             public void afterTextChanged(Editable s){
-
-                isValidAccess = IPAddressValidator.validate(IP_textBox.getText().toString());
-                if(!isValidAccess) {
-                    //Access_textBox.setText("");
-                    Toast invalidIPToast = Toast.makeText(getApplicationContext(), getString(R.string.invalidIPToast), Toast.LENGTH_SHORT);
-                    invalidIPToast.show();
-                }
+                temp_IP = IP_textBox.getText().toString();
+            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after){}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+        });
+        //create TextWatcher for Port editText
+        port_textBox.addTextChangedListener(new TextWatcher(){
+            public void afterTextChanged(Editable s){
+                temp_Port = convertString2Int(port_textBox.getText().toString());
             }
             public void beforeTextChanged(CharSequence s, int start, int count, int after){}
             public void onTextChanged(CharSequence s, int start, int before, int count) {}
@@ -105,14 +106,14 @@ public class SettingsActivity extends Activity {
         }
     }
     public void saveSettings(){
+        boolean isValidAccess = isValidAccess(temp_AccessCode);
+        boolean isValidIP = isValidIP(temp_IP);
+        boolean isValidPort = isValidPort(temp_Port);
 
-        if(isValidAccess) {
-            int access_code = Integer.valueOf(Access_textBox.getText().toString());
-            Prefs.setAccessCode(getApplicationContext(), access_code);
-            String ip_address = IP_textBox.getText().toString();
-            Prefs.setIPAddress(getApplicationContext(), ip_address);
-            int port_number = Integer.valueOf(port_textBox.getText().toString());
-            Prefs.setPortNumber(getApplicationContext(), port_number);
+        if((isValidAccess && isValidIP) && isValidPort) {
+            Prefs.setAccessCode(getApplicationContext(), temp_AccessCode);
+            Prefs.setIPAddress(getApplicationContext(), temp_IP);
+            Prefs.setPortNumber(getApplicationContext(), temp_Port);
 
             //switch to MainActivity
             Intent saveSettings_intent = new Intent(this, MainActivity.class);
@@ -127,7 +128,48 @@ public class SettingsActivity extends Activity {
                 Toast invalidIPToast = Toast.makeText(getApplicationContext(), getString(R.string.invalidIPToast), Toast.LENGTH_SHORT);
                 invalidIPToast.show();
             }
+            if(!isValidPort){
+                Toast invalidPortToast = Toast.makeText(getApplicationContext(), getString(R.string.invalidPortToast), Toast.LENGTH_SHORT);
+                invalidPortToast.show();
+            }
 
+        }
+    }
+    private boolean isValidAccess(int value){
+        boolean valid;
+        valid = ((value>=0 && value<=9999) ? true : false);
+        if(!valid) {
+            Toast invalidAccessToast = Toast.makeText(getApplicationContext(), getString(R.string.invalidAccessToast), Toast.LENGTH_SHORT);
+            invalidAccessToast.show();
+        }
+        return valid;
+    }
+
+    private boolean isValidIP(String value){
+        boolean valid;
+        valid = IPAddressValidator.validate(value);
+        if(!valid) {
+            Toast invalidIPToast = Toast.makeText(getApplicationContext(), getString(R.string.invalidIPToast), Toast.LENGTH_SHORT);
+            invalidIPToast.show();
+        }
+        return valid;
+    }
+
+    private boolean isValidPort(int value){
+        boolean valid;
+        valid = ((value>=0 && value<=255) ? true : false);
+        if(!valid) {
+            Toast invalidPortToast = Toast.makeText(getApplicationContext(), getString(R.string.invalidPortToast), Toast.LENGTH_SHORT);
+            invalidPortToast.show();
+        }
+        return valid;
+    }
+
+    private int convertString2Int(String value){
+        try {
+            return Integer.valueOf(value);
+        } catch (NumberFormatException e) {
+            return -1;
         }
     }
 
