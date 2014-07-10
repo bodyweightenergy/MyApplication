@@ -44,7 +44,7 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:text="Access Code"
-                    android:id="@+id/debugTextView"
+                    android:id="@+id/TextView4"
                     android:singleLine="false" />
 
                 <EditText
